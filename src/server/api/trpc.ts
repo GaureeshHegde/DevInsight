@@ -80,6 +80,7 @@ export const createTRPCRouter = t.router;
  * network latency that would occur in production but not in local development.
  */
 
+//this function is a middleware to tell the trpc router that the user must be authenticated to access the resource
 const isAuthenticated = t.middleware(async({next, ctx}) => {
   const user = await auth()
   if(!user){

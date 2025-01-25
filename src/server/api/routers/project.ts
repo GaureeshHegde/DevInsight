@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { projectShutdown } from "next/dist/build/swc/generated-native";
 
 export const projectRouter = createTRPCRouter({
     createProject : protectedProcedure.input(
@@ -10,8 +11,30 @@ export const projectRouter = createTRPCRouter({
         })
     ).mutation(async ({ctx , input}) =>
     {
-        ctx.user.userId
-        console.log('input',input)
-        return true
+        console.log('ctx.user.userId:', ctx.user.userId);
+        const project = await ctx.db.project.create({
+            data : {               
+                githubUrl : input.githubUrl,
+                name : input.name,
+                userToProjects : {
+                    create : {
+                        userId : ctx.user.userId!,
+                    }
+                }
+            }
+        })
+        return project
+    }),
+    getProjects : protectedProcedure.query(async ({ctx}) => {
+        return await ctx.db.project.findMany({
+            where : {
+                userToProjects : {
+                    some : {
+                        userId : ctx.user.userId!
+                    }
+                },
+                deletedAt : null
+            }
+        })
     })
 })

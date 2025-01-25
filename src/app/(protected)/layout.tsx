@@ -1,8 +1,8 @@
 'use client';
 
-import { SidebarProvider } from '~/components/ui/sidebar'; // Assuming SidebarProvider is available
 import { UserButton } from '@clerk/nextjs';
-import { AppSidebar } from './dashboard/app-sidebar'; // Import the updated AppSidebar
+import { AppSidebar } from './dashboard/app-sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
 import { cn } from '~/lib/utils';
 
 type Props = {
@@ -12,25 +12,27 @@ type Props = {
 const SidebarLayout: React.FC<Props> = ({ children }) => {
     return (
         <SidebarProvider>
-            <div className="flex w-screen min-h-screen">
-                {/* Render AppSidebar without passing props */}
+            <div className="flex min-h-screen w-full">
                 <AppSidebar />
-                {/* Main Content */}
-                <main className=" flex-1 p-4">
-                    <div className="flex items-center gap-2 border-sidebar-border bg-sidebar border shadow rounded-md p-2 px-4">
+                <SidebarInset className="flex-1">
+                    {/* Header with UserButton */}
+                    <header className="flex h-16 items-center gap-4 px-6 border-b">
+                        <SidebarTrigger />
                         <div className="ml-auto">
                             <UserButton />
                         </div>
-                    </div>
-                    <div className="h-4"></div>
-                    {/* Main content area */}
-                    <div className="border-sidebar-border bg-sidebar border shadow rounded-md overflow-y-scroll h-[calc(100vh-6rem)] p-4">
-                        {children}
-                    </div>
-                </main>
+                    </header>
+                    {/* Main content */}
+                    <main className="flex-1 p-6 w-full">
+                        <div className="border-sidebar-border bg-sidebar border shadow rounded-md overflow-y-auto min-h-[calc(100vh-7rem)] w-full p-4">
+                            {children}
+                        </div>
+                    </main>
+                </SidebarInset>
             </div>
         </SidebarProvider>
     );
 };
 
 export default SidebarLayout;
+
